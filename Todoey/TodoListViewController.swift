@@ -7,38 +7,38 @@
 //
 
 import UIKit
+import CoreData
 
 class TodoListViewController: UITableViewController {
     
     var itemArray = [Item]()
     
-    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent(K.plist)
-    
-    let defaults = UserDefaults.standard
+    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
 
 
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+                
+//        let newItem = Item()
+//        newItem.title = "First Element"
+//        newItem.done = true
+//        itemArray.append(newItem)
+//        
+//        let newItem2 = Item()
+//        newItem2.title = "Second Element"
+//        itemArray.append(newItem2)
+//        
+//        let newItem3 = Item()
+//        newItem3.title = "Third Element"
+//        itemArray.append(newItem3)
+//        if let items = defaults.array(forKey: K.defaultsItemArray) as? [Item] {
+//            itemArray = items
+//        }
         
-        print(dataFilePath)
+//        loadItems()
         
-        let newItem = Item()
-        newItem.title = "First Element"
-        newItem.done = true
-        itemArray.append(newItem)
-        
-        let newItem2 = Item()
-        newItem2.title = "Second Element"
-        itemArray.append(newItem2)
-        
-        let newItem3 = Item()
-        newItem3.title = "Third Element"
-        itemArray.append(newItem3)
-        
-        if let items = defaults.array(forKey: K.defaultsItemArray) as? [Item] {
-            itemArray = items
-        }
+        print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
         
     }
     
@@ -49,7 +49,6 @@ class TodoListViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
         
         let cell = tableView.dequeueReusableCell(withIdentifier: K.cellIdentifier, for: indexPath)
         
@@ -87,10 +86,10 @@ class TodoListViewController: UITableViewController {
         
         let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
 //            What will happen once the user clicks the add item button on our UIAlert
-            
-            let newItem = Item()
+           
+            let newItem = Item(context: self.context)
             newItem.title = textField.text!
-            
+            newItem.done = false
             self.itemArray.append(newItem)
             
             self.saveItems()
@@ -108,16 +107,26 @@ class TodoListViewController: UITableViewController {
 //    MARK: - Model Manipulation Methods
     
     func saveItems(){
-        let encoder = PropertyListEncoder()
         do{
-            let data = try encoder.encode(itemArray)
-            try data.write(to: dataFilePath!)
+           try context.save()
         }catch{
-            print("Error encoding item array, \(error)")
+           print("Error saving content: \(error)")
         }
         self.tableView.reloadData()
     }
     
+//    func loadItems(){
+//        if let data = try? Data(contentsOf: dataFilePath!){
+//            let decoder = PropertyListDecoder()
+//            do{
+//                itemArray = try decoder.decode([Item].self, from: data)
+//            }catch{
+//                print("Error: \(error)")
+//            }
+//        }
+//    }
+    
 
+    
 }
 
