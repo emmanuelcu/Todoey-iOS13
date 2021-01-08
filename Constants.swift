@@ -13,4 +13,9 @@ struct K {
     static let defaultsItemArray = "TodoListArray"
     static let plist = "Item.plist"
     static let coreDataModel = "DataModel"
+    static let categoryCellIdentifier = "CategoryCell"
+    
+    struct Segues {
+        static let categorySegue = "goToItems"
+    }
 }
