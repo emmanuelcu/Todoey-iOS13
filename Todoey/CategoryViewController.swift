@@ -9,7 +9,7 @@
 import UIKit
 import RealmSwift
 
-class CategoryViewController: UITableViewController {
+class CategoryViewController: SwipeTableViewController {
     
     let realm = try! Realm()
     
@@ -21,6 +21,7 @@ class CategoryViewController: UITableViewController {
         super.viewDidLoad()
         
         loadCategories()
+        
         
     }
     
@@ -34,8 +35,8 @@ class CategoryViewController: UITableViewController {
             
             let newCategory = Category()
             newCategory.name = textField.text!
-//            Line of code for CoreData
-//            self.categoryArray.append(newCategory)
+            //            Line of code for CoreData
+            //            self.categoryArray.append(newCategory)
             
             self.save(category: newCategory)
         }
@@ -59,7 +60,7 @@ class CategoryViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: K.categoryCellIdentifier, for: indexPath)
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
         
         cell.textLabel?.text = categoryArray?[indexPath.row].name ?? "No Categories added yet"
         
@@ -74,6 +75,8 @@ class CategoryViewController: UITableViewController {
         performSegue(withIdentifier: K.Segues.categorySegue, sender: self)
         //
     }
+    
+    
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let destinationVC = segue.destination as! TodoListViewController
@@ -109,5 +112,22 @@ class CategoryViewController: UITableViewController {
         
     }
     
+    //    MARK: - Delete Data From Swipe
+    
+    override func updateModel(at indexPath: IndexPath) {
+        
+        if let categoryForDeletion = self.categoryArray?[indexPath.row]{
+            do{
+                try self.realm.write{
+                    self.realm.delete(categoryForDeletion)
+                }
+            }catch{
+                print("Error: Deleting category, \(error)")
+            }
+        }
+    }
+    
     
 }
+
+

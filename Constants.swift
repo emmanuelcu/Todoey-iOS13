@@ -9,7 +9,7 @@
 import Foundation
 
 struct K {
-    static let cellIdentifier = "ToDoItemCell"
+    static let cellIdentifier = "Cell"
     static let defaultsItemArray = "TodoListArray"
     static let plist = "Item.plist"
     static let coreDataModel = "DataModel"

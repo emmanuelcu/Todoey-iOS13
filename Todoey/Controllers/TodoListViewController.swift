@@ -9,7 +9,7 @@
 import UIKit
 import RealmSwift
 
-class TodoListViewController: UITableViewController{
+class TodoListViewController: SwipeTableViewController{
     
     var todoItems: Results<Item>?
     //        [Item]()
@@ -47,6 +47,8 @@ class TodoListViewController: UITableViewController{
         
         //        print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
         
+
+        
     }
     
     //    MARK: - Tableview Datasource Methods
@@ -57,7 +59,9 @@ class TodoListViewController: UITableViewController{
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: K.cellIdentifier, for: indexPath)
+        //        let cell = tableView.dequeueReusableCell(withIdentifier: K.cellIdentifier, for: indexPath)
+        
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
         
         if let item = todoItems?[indexPath.row]{
             
@@ -178,6 +182,18 @@ class TodoListViewController: UITableViewController{
         tableView.reloadData()
     }
     
+    override func updateModel(at indexPath: IndexPath) {
+        if let item = todoItems?[indexPath.row]{
+            do{
+                try realm.write{
+                    realm.delete(item)
+                }
+            }catch{
+                print("Error: Deleting item, \(error)")
+            }
+        }
+    }
+    
 }
 
 //MARK: - UISearchBar Methods
@@ -189,26 +205,26 @@ extension TodoListViewController: UISearchBarDelegate{
         
         tableView.reloadData()
         
-//        let request: NSFetchRequest<Item> = Item.fetchRequest()
-//
-////        This part of code is used to search the text that the user types in the searchbar.
-//
-//        let predicate = NSPredicate(format: "title CONTAINS [cd] %@", searchBar.text!)
-//
-//        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
-//
-//        loadItems(with: request, predicate: predicate)
+        //        let request: NSFetchRequest<Item> = Item.fetchRequest()
+        //
+        ////        This part of code is used to search the text that the user types in the searchbar.
+        //
+        //        let predicate = NSPredicate(format: "title CONTAINS [cd] %@", searchBar.text!)
+        //
+        //        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
+        //
+        //        loadItems(with: request, predicate: predicate)
     }
-
+    
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         if searchBar.text?.count == 0 {
             loadItems()
             DispatchQueue.main.async {
                 searchBar.resignFirstResponder()
             }
-
+            
         }
     }
-
+    
 }
 
